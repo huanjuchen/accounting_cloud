@@ -1,0 +1,72 @@
+server:
+  port: 8100
+spring:
+  application:
+    name: user-center
+  #数据源信息
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/accounting?useTimezone=true&serverTimezone=Asia/Shanghai&&useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 #nacos地址
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+
+
+
+  redis:
+    host: 192.168.224.138
+    port: 6379
+
+token:
+  redis:
+    host: ${spring.redis.host}
+    port: ${spring.redis.port}
+    db: 0
+
+
+#mybatis配置
+mybatis:
+  type-aliases-package: xyz.huanju.accounting.domain,xyz.huanju.accounting.domain.vo
+
+      #management:
+#  endpoints:
+#    web:
+#      exposure:
+        #开启所有
+#        include: "*"
+
+#监控配置
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    info:
+      enabled: true
+    caches:
+      enabled: true
+    env:
+      post:
+        enabled: true
+    beans:
+      enabled: true
+    metrics:
+      enabled: true
+
+
+
+#配置监控info信息
+info:
+  name: ${spring.application.name}
+  port: ${server.port}
+
+
+
+

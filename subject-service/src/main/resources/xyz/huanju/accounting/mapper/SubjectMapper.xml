@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.huanju.accounting.mapper.SubjectMapper">
+
+    <insert id="save" parameterType="subject" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO subject(code, name, category,parent_id, remark, valid)
+        VALUES (#{code}, #{name}, #{category},#{parentId},#{remark}, #{valid})
+    </insert>
+
+    <update id="update" parameterType="xyz.huanju.accounting.domain.Subject">
+        UPDATE subject
+        <set>
+            <if test="code!=null and code!=''">
+                code=#{code},
+            </if>
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="category!=null">
+                category=#{category},
+            </if>
+            <if test="parentId!=null">
+                parent_id=#{parentId},
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark=#{remark},
+            </if>
+            <if test="valid!=null">
+                valid=#{valid},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <resultMap id="subjectMap" type="subject">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="category" property="category"/>
+        <result column="remark" property="remark"/>
+        <result column="valid" property="valid"/>
+        <result column="parent_id" property="parentId"/>
+        <association property="parent">
+            <id column="pId" property="id"/>
+            <result column="pCode" property="code"/>
+            <result column="pName" property="name"/>
+            <result column="pCategory" property="category"/>
+            <result column="pValid" property="valid"/>
+            <result column="pRemark" property="remark"/>
+        </association>
+    </resultMap>
+
+
+    <select id="find" parameterType="int" resultMap="subjectMap">
+        SELECT s.*,
+               p.id       AS pId,
+               p.code     AS pCode,
+               p.name     AS pName,
+               p.category AS pCategory,
+               p.valid    AS pValid,
+               p.remark   AS pRemark
+        FROM subject s
+                 LEFT JOIN subject p
+                           ON s.parent_id=p.id
+        WHERE s.id = #{key}
+    </select>
+
+    <select id="findByName" parameterType="string" resultMap="subjectMap">
+        SELECT s.*,
+               p.id       AS pId,
+               p.code     AS pCode,
+               p.name     AS pName,
+               p.category AS pCategory,
+               p.valid    AS pValid,
+               p.remark   AS pRemark
+        FROM subject s
+                 LEFT JOIN subject p
+                           ON s.parent_id=p.id
+        WHERE s.name = #{name}
+    </select>
+
+
+    <select id="findByCode" parameterType="string" resultMap="subjectMap">
+        SELECT s.*,
+               p.id       AS pId,
+               p.code     AS pCode,
+               p.name     AS pName,
+               p.category AS pCategory,
+               p.valid    AS pValid,
+               p.remark   AS pRemark
+        FROM subject s
+                 LEFT JOIN subject p
+                           ON s.parent_id=p.id
+        WHERE s.code = #{code}
+    </select>
+
+
+    <select id="list" parameterType="map" resultMap="subjectMap">
+        SELECT s.*,
+        p.id       AS pId,
+        p.code     AS pCode,
+        p.name     AS pName,
+        p.category AS pCategory,
+        p.valid    AS pValid,
+        p.remark   AS pRemark
+        FROM subject s
+        LEFT JOIN subject p
+        ON s.parent_id=p.id
+        <where>
+            <if test="codeSw!=null and codeSw!=''">
+                AND s.code LIKE CONCAT(#{codeSw},'%')
+            </if>
+            <if test="nameSw!=null and nameSw!=''">
+                AND s.name LIKE CONCAT(#{nameSw},'%')
+            </if>
+            <if test="valid!=null">
+                AND s.valid=#{valid}
+            </if>
+        </where>
+        <if test="desc!=null">
+            ORDER BY code DESC
+        </if>
+        <if test="offset!=null and count!=null">
+            LIMIT #{offset},#{count}
+        </if>
+    </select>
+
+    <select id="count" parameterType="map" resultType="integer">
+        SELECT COUNT(id)
+        FROM subject
+        <where>
+            <if test="codeSw!=null and codeSw!=''">
+                AND code LIKE CONCAT(#{codeSw},'%')
+            </if>
+            <if test="nameSw!=null and nameSw!=''">
+                AND name LIKE CONCAT(#{nameSw},'%')
+            </if>
+            <if test="valid!=null">
+                AND valid=#{valid}
+            </if>
+        </where>
+    </select>
+
+    <delete id="delete" parameterType="integer">
+        DELETE
+        FROM subject
+        WHERE id = #{id}
+    </delete>
+</mapper>

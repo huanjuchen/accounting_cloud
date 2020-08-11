@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.huanju.accounting.mapper.UserMapper">
+    <insert id="save" parameterType="user" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO user(id, username, password,name, role, phone, join_time, valid)
+        VALUES (null, #{username}, #{password},#{name}, #{role}, #{phone}, #{joinTime}, 1)
+    </insert>
+
+    <select id="find" resultMap="baseResultMap">
+        SELECT id, username, password, name, role, phone, join_time, valid
+        FROM user
+        WHERE id = #{key}
+    </select>
+
+
+    <select id="findByName" resultMap="baseResultMap" parameterType="string">
+        SELECT id, username, password, name, role, phone, join_time, valid
+        FROM user
+        WHERE username = #{name}
+    </select>
+
+    <resultMap id="baseResultMap" type="xyz.huanju.accounting.domain.User">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="INTEGER"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="join_time" property="joinTime" jdbcType="TIMESTAMP"/>
+        <result column="valid" property="valid" jdbcType="TINYINT"/>
+    </resultMap>
+
+
+
+
+    <select id="list" resultMap="baseResultMap" parameterType="map">
+        SELECT id,username,password,name,role,phone,join_time,valid
+        FROM user
+        <where>
+            <if test="unameSw!=null and unameSw!=''">
+                AND username LIKE CONCAT(#{unameSw},'%')
+            </if>
+            <if test="nameSw!=null and nameSw!=''">
+                AND name LIKE CONCAT(#{nameSw},'%')
+            </if>
+            <if test="valid!=null">
+                AND valid=#{valid}
+            </if>
+        </where>
+        <if test="desc!=null and desc">
+            ORDER BY id DESC
+        </if>
+        <if test="offset!=null and count!=null">
+            LIMIT #{offset},#{count}
+        </if>
+    </select>
+
+
+    <select id="count" resultType="integer" parameterType="map">
+        SELECT count(id)
+        FROM user
+        <where>
+            <if test="unameSw!=null and unameSw!=''">
+                AND username LIKE CONCAT(#{unameSw},'%')
+            </if>
+            <if test="nameSw!=null and nameSw!=''">
+                AND name LIKE CONCAT(#{nameSw},'%')
+            </if>
+            <if test="valid!=null">
+                AND valid=#{valid}
+            </if>
+        </where>
+    </select>
+
+    <update id="update" parameterType="user">
+        UPDATE user
+        <set>
+            <if test="username!=null and username!=''">
+                username=#{username},
+            </if>
+            <if test="password!=null and password!=''">
+                password=#{password},
+            </if>
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="role!=null">
+                role=#{role},
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone},
+            </if>
+            <if test="joinTime!=null">
+                join_time=#{joinTime},
+            </if>
+            <if test="valid!=null">
+                valid=#{valid}
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+
+</mapper>
