@@ -10,15 +10,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JsonUtils {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static{
-        OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
     }
 
     public static String toJson(Object object) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(object);
+            return MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             return null;
         }
@@ -26,7 +26,7 @@ public class JsonUtils {
 
     public static <T> T toObject(String str,Class<T> clazz){
         try {
-            return OBJECT_MAPPER.readValue(str,clazz);
+            return MAPPER.readValue(str,clazz);
         } catch (JsonProcessingException e) {
             return null;
         }

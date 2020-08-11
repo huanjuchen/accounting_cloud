@@ -25,7 +25,7 @@ public class SubjectController {
     @Resource(name = "subjectService")
     private SubjectService subjectService;
 
-    private SubjectConverter subjectConverter=SubjectConverter.INSTANCE;
+    private final SubjectConverter subjectConverter=SubjectConverter.INSTANCE;
 
     /**
      * 创建科目
@@ -35,7 +35,7 @@ public class SubjectController {
     @PostMapping("/manage/subject")
     public CommonResult<SubjectVO> createSubject(@RequestBody @Validated Subject subject) {
         Subject temp = subjectService.save(subject);
-        return CommonResult.ok(temp != null ? temp.covert() : null);
+        return CommonResult.ok(subjectConverter.convertToVo(temp));
     }
 
 

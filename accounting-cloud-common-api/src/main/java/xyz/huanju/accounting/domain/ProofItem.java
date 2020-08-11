@@ -79,26 +79,6 @@ public class ProofItem implements Serializable {
      */
     private Integer proofId;
 
-    public ProofItemVO covert() {
-        ProofItemVO proofItemVo = new ProofItemVO();
-        proofItemVo.setId(this.id)
-                .setAbstraction(this.abstraction)
-                .setCreditLedgerSubject(this.creditLedgerSubject == null ? null : this.creditLedgerSubject.covert())
-                .setCreditSubSubject(this.creditSubSubject == null ? null : this.creditSubSubject.covert())
-                .setDebitLedgerSubject(this.debitLedgerSubject == null ? null : this.debitLedgerSubject.covert())
-                .setDebitSubSubject(this.debitSubSubject == null ? null : this.debitSubSubject.covert())
-                .setMoney(this.money)
-                .setCharge(this.charge);
 
-        return proofItemVo;
-    }
-
-    public static List<ProofItemVO> listCovert(List<ProofItem> proofItems){
-        List<ProofItemVO> proofVos=new ArrayList<>(proofItems.size());
-        for (ProofItem proofItem : proofItems) {
-            proofVos.add(proofItem.covert());
-        }
-        return proofVos;
-    }
 
 }

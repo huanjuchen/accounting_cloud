@@ -68,27 +68,5 @@ public class SubAccount implements Serializable {
     private BigDecimal money;
 
 
-    public SubAccountVO covert() {
-        SubAccountVO vo = new SubAccountVO();
-        vo.setId(this.id)
-                .setSubject(this.subject == null ? null : this.subject.covert())
-                .setDate(this.date)
-                .setProofId(this.proofId)
-                .setAbstraction(this.abstraction)
-                .setDebitMoney(this.debitMoney)
-                .setCreditMoney(this.creditMoney)
-                .setMark(this.mark)
-                .setMoney(this.money);
-        return vo;
-    }
-
-    public static List<SubAccountVO> listCovert(List<SubAccount> sourcesList) {
-        List<SubAccountVO> vos = new ArrayList<>(sourcesList.size());
-        for (SubAccount subAccount : sourcesList) {
-            vos.add(subAccount.covert());
-        }
-        return vos;
-    }
-
 
 }

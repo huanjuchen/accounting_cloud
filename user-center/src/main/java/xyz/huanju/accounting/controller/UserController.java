@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
-    private UserConverter userConverter=UserConverter.INSTANCE;
+    private final UserConverter userConverter=UserConverter.INSTANCE;
 
     @Resource
     private UserService userService;
@@ -48,7 +48,7 @@ public class UserController {
                 User user = userService.find(userId);
                 if (user != null) {
                     List<UserVO> userVos = new ArrayList<>();
-                    userVos.add(user.covert());
+                    userVos.add(userConverter.convertToVo(user));
                     return CommonResult.ok(userVos);
                 }
             } catch (NumberFormatException e) {

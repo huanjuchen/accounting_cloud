@@ -86,30 +86,5 @@ public class Proof implements Serializable {
      */
     private Integer trash;
 
-    public ProofVO covert() {
-        ProofVO proofVo = new ProofVO();
-        proofVo.setId(this.id)
-                .setDate(this.date)
-                .setInvoiceCount(this.invoiceCount)
-                .setManager(this.manager)
-                .setCollection(this.collection)
-                .setRecorder(recorder == null ? null : this.recorder.covert())
-                .setCashier(this.cashier)
-                .setPayer(this.payer)
-                .setItems(this.items == null ? null : ProofItem.listCovert(this.items))
-                .setVerify(this.verify)
-                .setVerifyUser(this.verifyUser == null ? null : this.verifyUser.covert())
-                .setVerifyTime(this.verifyTime)
-                .setTrash(this.trash);
-        return proofVo;
-    }
-
-    public static List<ProofVO> listCovert(List<Proof> proofs){
-        List<ProofVO> proofVos=new ArrayList<>(proofs.size());
-        for (Proof proof : proofs) {
-            proofVos.add(proof.covert());
-        }
-        return proofVos;
-    }
 
 }

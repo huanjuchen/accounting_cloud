@@ -57,25 +57,5 @@ public class BankAccount implements Serializable {
      */
     private BigDecimal money;
 
-    public BankAccountVO covert() {
-        BankAccountVO bankAccountVO = new BankAccountVO();
-        bankAccountVO.setId(this.id)
-                .setDate(this.date)
-                .setProofId(this.proofId)
-                .setAbstraction(this.abstraction)
-                .setSubject(this.subject != null ? this.subject.covert() : null)
-                .setDebitMoney(this.debitMoney)
-                .setCreditMoney(this.creditMoney)
-                .setMoney(this.money);
-        return bankAccountVO;
-    }
-
-    public static List<BankAccountVO> listCovert(List<BankAccount> bankAccountList) {
-        List<BankAccountVO> vos = new ArrayList<>(bankAccountList.size());
-        for (BankAccount bankAccount : bankAccountList) {
-            vos.add(bankAccount.covert());
-        }
-        return vos;
-    }
 
 }

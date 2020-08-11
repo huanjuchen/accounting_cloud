@@ -49,24 +49,5 @@ public class User implements Serializable {
     private Boolean valid;
 
 
-    public UserVO covert() {
-        UserVO userVo = new UserVO();
-        userVo.setId(this.id).setUsername(this.username)
-                .setName(this.name)
-                .setPhone(this.phone)
-                .setRole(this.role)
-                .setValid(this.valid)
-                .setJoinTime(this.joinTime);
-        return userVo;
-    }
-
-    public static List<UserVO> listCovert(List<User> users){
-        List<UserVO> userVos = new ArrayList<>(users.size());
-        for (User user : users) {
-            userVos.add(user.covert());
-        }
-        return userVos;
-    }
-
 
 }

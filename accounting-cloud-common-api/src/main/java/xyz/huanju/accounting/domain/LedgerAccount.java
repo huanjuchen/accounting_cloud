@@ -61,26 +61,4 @@ public class LedgerAccount implements Serializable {
      */
     private BigDecimal money;
 
-
-    public LedgerAccountVO covert() {
-        LedgerAccountVO leda = new LedgerAccountVO();
-        leda.setId(this.id)
-                .setDate(this.date)
-                .setSubject(this.subject == null ? null : this.subject.covert())
-                .setAbstraction(this.abstraction)
-                .setDebitMoney(this.debitMoney)
-                .setCreditMoney(this.creditMoney)
-                .setMark(this.mark)
-                .setMoney(this.money);
-        return leda;
-    }
-
-    public static List<LedgerAccountVO> listCovert(List<LedgerAccount> sourcesList) {
-        List<LedgerAccountVO> vos = new ArrayList<>(sourcesList.size());
-        for (LedgerAccount ledgerAccount : sourcesList) {
-            vos.add(ledgerAccount.covert());
-        }
-        return vos;
-    }
-
 }

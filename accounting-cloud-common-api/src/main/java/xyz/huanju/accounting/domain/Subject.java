@@ -68,24 +68,5 @@ public class Subject implements Serializable {
      */
     private Boolean valid;
 
-    public SubjectVO covert() {
-        SubjectVO subjectVo = new SubjectVO();
-        subjectVo.setId(this.id)
-                .setCode(this.code)
-                .setName(this.name)
-                .setCategory(this.category)
-                .setParent(this.parent==null?null:this.parent.covert())
-                .setRemark(this.remark)
-                .setValid(this.valid);
-        return subjectVo;
-    }
-
-    public static List<SubjectVO> listCovert(List<Subject> subjects) {
-        List<SubjectVO> subjectVos = new ArrayList<>(subjects.size());
-        for (Subject subject : subjects) {
-            subjectVos.add(subject.covert());
-        }
-        return subjectVos;
-    }
 
 }
