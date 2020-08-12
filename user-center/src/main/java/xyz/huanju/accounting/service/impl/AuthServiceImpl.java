@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.huanju.accounting.converter.UserConverter;
 import xyz.huanju.accounting.dao.UserDAO;
 import xyz.huanju.accounting.domain.LoginTokenInfo;
 import xyz.huanju.accounting.domain.User;
@@ -55,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
         Token token = new Token();
         token.setRole(user.getRole()).setUserId(user.getId());
         String tokenId = tokenService.saveToken(token);
-        return new LoginTokenInfo(tokenId, user.covert());
+        return new LoginTokenInfo(tokenId, UserConverter.INSTANCE.convertToVo(user));
     }
 
     @Override

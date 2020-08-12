@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: gateway
+
+  redis:
+    host: 192.168.224.138
+    port: 6379
+    database: 0
   cloud:
     nacos:
       discovery:
@@ -20,17 +25,30 @@ spring:
         - id: subject-service
           uri: lb://subject-service
           predicates:
-            - Path=/subject/**,/admin/subject/**
+            - Path=/subject/**,/admin/subject/**,/subject-service/actuator/**,/manage/subject/**
+          filters:
+            - RewritePath=/subject-service/actuator/(?<segment>), /actuator/$\{segment}
 
 
           #user center 服务
         - id: user-center
           uri: lb://user-center
           predicates:
-            - Path=/center/**,/admin/user/**,/test/user/**,/user/**
+            - Path=/center/**,/admin/user/**,/manage/user/**,/test/user/**,/user/**,/user-center/actuator/**,/login,/logout
+          filters:
+            - RewritePath=/subject-service/actuator/(?<segment>), /actuator/$\{segment}
+
+        - id: proof-service
+          uri: lb://proof-service
+          predicates:
+            - Path=/proof/**,/admin/proof/**,/manage/user/**
 
 
-
+token:
+  redis:
+    host: ${spring.redis.host}
+    port: ${spring.redis.port}
+    db: ${spring.redis.database}
 
 
 

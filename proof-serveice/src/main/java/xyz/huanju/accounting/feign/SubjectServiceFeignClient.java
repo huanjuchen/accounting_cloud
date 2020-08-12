@@ -20,8 +20,8 @@ public interface SubjectServiceFeignClient {
      * @param id 科目Id
      * @return subject
      */
-    @GetMapping(value = {"/subject/{id}", "/admin/subject/{id}"})
-    public CommonResult<SubjectVO> getSubjectById(@PathVariable int id);
+    @GetMapping(value = {"/subject/{id}"})
+    CommonResult<SubjectVO> getSubjectById(@PathVariable(value = "id") Integer id);
 
 
     /**
@@ -31,6 +31,6 @@ public interface SubjectServiceFeignClient {
      * @return subject
      */
     @GetMapping("/subject/code/{code}")
-    CommonResult<SubjectVO> getSubjectByCode(@PathVariable String code);
+    CommonResult<SubjectVO> getSubjectByCode(@PathVariable(value = "code") String code);
 
 }

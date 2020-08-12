@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: user-center
+    name: proof-service
   #数据源信息
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/accounting?useTimezone=true&serverTimezone=Asia/Shanghai&&useSSL=false

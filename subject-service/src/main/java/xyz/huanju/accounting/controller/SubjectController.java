@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import xyz.huanju.accounting.converter.SubjectConverter;
 import xyz.huanju.accounting.domain.Subject;
 import xyz.huanju.accounting.domain.response.CommonResult;
+import xyz.huanju.accounting.domain.response.ResultCode;
 import xyz.huanju.accounting.domain.vo.SubjectVO;
+import xyz.huanju.accounting.exception.AccountingException;
 import xyz.huanju.accounting.service.SubjectService;
 
 import javax.annotation.Resource;
@@ -46,8 +48,9 @@ public class SubjectController {
      */
 
     @GetMapping(value = {"/subject/{id}","/admin/subject/{id}"})
-    public CommonResult<SubjectVO> getSubjectById(@PathVariable int id) {
+    public CommonResult<SubjectVO> getSubjectById(@PathVariable Integer id) {
         Subject subject = subjectService.find(id);
+
         return CommonResult.ok(subjectConverter.convertToVo(subject));
     }
 

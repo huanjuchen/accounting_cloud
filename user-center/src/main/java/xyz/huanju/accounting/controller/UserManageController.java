@@ -31,19 +31,19 @@ public class UserManageController {
     }
 
     @PutMapping("/admin/user/resetPwd/{userId}")
-    public CommonResult<UserVO> resetPassword(@PathVariable Integer userId) {
+    public CommonResult<UserVO> resetPassword(@PathVariable(value = "userId") Integer userId) {
         userManageService.resetPwd(userId);
         return CommonResult.ok();
     }
 
     @PutMapping("/admin/user/lock/{userId}")
-    public CommonResult<UserVO> lockUser(@PathVariable Integer userId) {
+    public CommonResult<UserVO> lockUser(@PathVariable(value = "userId") Integer userId) {
         userManageService.lockUser(userId);
         return CommonResult.ok();
     }
 
     @PutMapping("/admin/user/unlock/{userId}")
-    public CommonResult<UserVO> unLockUser(@PathVariable Integer userId) {
+    public CommonResult<UserVO> unLockUser(@PathVariable(value = "userId") Integer userId) {
         userManageService.unLockUser(userId);
         return CommonResult.ok();
     }

@@ -10,6 +10,21 @@ import java.util.List;
  */
 public interface ProofItemMapper extends BaseMapper<ProofItem> {
 
+    /**
+     * 获取所有凭证项
+     *
+     * @param proofId proof
+     * @return proof item list
+     */
+    List<ProofItem> items(Integer proofId);
+
+
+    /**
+     * 根据科目获取 proof item
+     *
+     * @param subjectId subject id
+     * @return proof item list
+     */
     List<ProofItem> listBySubject(Integer subjectId);
 
 

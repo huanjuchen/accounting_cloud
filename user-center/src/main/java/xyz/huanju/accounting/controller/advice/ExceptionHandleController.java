@@ -36,32 +36,31 @@ public class ExceptionHandleController {
     /**
      * 处理自定义业务异常
      *
-     * @param e
      */
     @ExceptionHandler(AccountingException.class)
-    public CommonResult accountingException(AccountingException e) {
+    public CommonResult<Object> accountingException(AccountingException e) {
         log.info(e.getMessage());
-        return new CommonResult(e.getErrorCode(), e.getMessage(), null);
+        return new CommonResult<>(e.getErrorCode(), e.getMessage(), null);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public CommonResult methodNotSupport(HttpRequestMethodNotSupportedException e) {
+    public CommonResult<Object> methodNotSupport(HttpRequestMethodNotSupportedException e) {
         log.info(e.getMessage());
         StringBuilder sb = new StringBuilder();
 
-        return new CommonResult(ResultCode.METHOD_NOT_ALLOWED, UN_SUPPORT_METHOD, null);
+        return new CommonResult<>(ResultCode.METHOD_NOT_ALLOWED, UN_SUPPORT_METHOD, null);
     }
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public CommonResult messageNotReadable(HttpMessageNotReadableException e) {
+    public CommonResult<Object> messageNotReadable(HttpMessageNotReadableException e) {
         log.info(e.getMessage());
 
-        return new CommonResult(ResultCode.BAD_REQUEST, REQUEST_PARAM_ERROR, null);
+        return new CommonResult<>(ResultCode.BAD_REQUEST, REQUEST_PARAM_ERROR, null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public CommonResult argumentNotValid(MethodArgumentNotValidException e) {
+    public CommonResult<Object> argumentNotValid(MethodArgumentNotValidException e) {
         log.info(e.getMessage());
         BindingResult bindingResult = e.getBindingResult();
         if (bindingResult.hasErrors()) {
@@ -73,22 +72,22 @@ public class ExceptionHandleController {
                     sb.append(" ");
                 }
             }
-            return new CommonResult(ResultCode.BAD_REQUEST, sb.toString(), null);
+            return new CommonResult<>(ResultCode.BAD_REQUEST, sb.toString(), null);
         }
 
-        return new CommonResult(ResultCode.BAD_REQUEST, REQUEST_PARAM_FORMAT_ERROR, null);
+        return new CommonResult<>(ResultCode.BAD_REQUEST, REQUEST_PARAM_FORMAT_ERROR, null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public CommonResult argumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+    public CommonResult<Object> argumentTypeMismatch(MethodArgumentTypeMismatchException e) {
         log.info(e.getMessage());
-        return new CommonResult(ResultCode.BAD_REQUEST, REQUEST_PARAM_ILLEGAL, null);
+        return new CommonResult<>(ResultCode.BAD_REQUEST, REQUEST_PARAM_ILLEGAL, null);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public CommonResult runtime(RuntimeException e) {
+    public CommonResult<Object> runtime(RuntimeException e) {
         log.error(e.getMessage());
         e.printStackTrace();
-        return new CommonResult(ResultCode.INTERNAL_SERVER_ERROR, SERVER_ERROR, null);
+        return new CommonResult<>(ResultCode.INTERNAL_SERVER_ERROR, SERVER_ERROR, null);
     }
 }

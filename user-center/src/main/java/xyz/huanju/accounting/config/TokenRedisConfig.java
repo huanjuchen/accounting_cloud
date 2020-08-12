@@ -41,7 +41,7 @@ public class TokenRedisConfig {
     @Bean(name = "tokenRedisTemplate")
     public RedisTemplate<String, Token> tokenTemplate(){
         RedisSerializer<String> keySerializer=new StringRedisSerializer();
-        RedisSerializer<Token> valueSerializer=new Jackson2JsonRedisSerializer<Token>(Token.class);
+        RedisSerializer<Token> valueSerializer=new Jackson2JsonRedisSerializer<>(Token.class);
         RedisTemplate<String,Token> template=new RedisTemplate<>();
         template.setConnectionFactory(tokenConnFactory());
         template.setValueSerializer(valueSerializer);

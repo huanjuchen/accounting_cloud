@@ -7,5 +7,5 @@ import xyz.huanju.accounting.mapper.BaseMapper;
  * @author HuanJu
  * @date 2020/8/11 0:15
  */
-public interface ProofDAO extends BaseMapper<Proof> {
+public interface ProofDAO extends BaseDAO<Proof> {
 }

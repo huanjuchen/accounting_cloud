@@ -26,17 +26,17 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
-    private final UserConverter userConverter=UserConverter.INSTANCE;
+    private final UserConverter userConverter = UserConverter.INSTANCE;
 
     @Resource
     private UserService userService;
 
     @GetMapping({"/admin/user", "/user"})
     public CommonResult<List<UserVO>> getUserList(@RequestParam(required = false, name = "page") String page,
-                                    @RequestParam(required = false, name = "pageSize") String pageSize,
-                                    @RequestParam(required = false, name = "selectWord") String selectWord,
-                                    @RequestParam(required = false, name = "desc") String desc,
-                                    @RequestParam(required = false, name = "valid") String valid) {
+                                                  @RequestParam(required = false, name = "pageSize") String pageSize,
+                                                  @RequestParam(required = false, name = "selectWord") String selectWord,
+                                                  @RequestParam(required = false, name = "desc") String desc,
+                                                  @RequestParam(required = false, name = "valid") String valid) {
         log.debug("page=" + page + "  pageSize=" + pageSize + "  selectWord=" + selectWord + "  valid=" + valid);
         Map<String, Object> map = new HashMap<>();
         Integer pageInt = null;
@@ -126,15 +126,18 @@ public class UserController {
 
 
     @GetMapping({"/admin/user/{userId}", "/user/{userId}"})
-    public CommonResult<UserVO> getUser(@PathVariable Integer userId) {
+    public CommonResult<UserVO> getUser(@PathVariable(value = "userId") Integer userId) {
         User user = userService.find(userId);
         return CommonResult.ok(userConverter.convertToVo(user));
     }
 
-    @GetMapping({"/admin/user/by-token", "/user/by-token"})
-    public CommonResult<UserVO> getUserByToken(HttpServletRequest request) {
-        String tokenId = request.getHeader("token_id");
-        User user = userService.getUserByToken(tokenId);
+    @GetMapping({"/admin/user/token/{tokenId}","/admin/user/by-token", "/user/token/{tokenId}","/user/by-token"})
+    public CommonResult<UserVO> getUserByToken(HttpServletRequest request, @PathVariable(value = "tokenId",required = false) String tokenId) {
+        String tid=tokenId;
+        if (tid==null||tid.length()==0){
+            tid=request.getHeader("token_id");
+        }
+        User user = userService.getUserByToken(tid);
         return CommonResult.ok(userConverter.convertToVo(user));
     }
 

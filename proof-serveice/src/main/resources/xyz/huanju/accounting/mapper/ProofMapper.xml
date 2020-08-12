@@ -3,4 +3,122 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.huanju.accounting.mapper.ProofMapper">
 
+
+    <insert id="save" parameterType="proof" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO proof(id, date,
+                          invoice_count, manager, collection,
+                          recorder_id, cashier, payer, verify, verify_user_id, verify_time, trash)
+        VALUES (NULL, #{date}, #{invoiceCount}, #{manager},
+                #{collection}, #{recorderId}, #{cashier}, #{payer}, #{verify}, #{verifyUserId}, #{verifyTime}, #{trash})
+    </insert>
+
+    <select id="find" resultMap="proofResultMap" parameterType="integer">
+        SELECT id,
+               date,
+               invoice_count,
+               manager,
+               collection,
+               recorder_id,
+               cashier,
+               payer,
+               verify,
+               verify_user_id,
+               verify_time,
+               trash
+        FROM proof
+        WHERE id = #{id}
+    </select>
+
+    <select id="list" resultMap="proofResultMap" parameterType="map">
+        SELECT id,
+        date,
+        invoice_count,
+        verify,
+        trash,
+        FROM proof p
+        <where>
+            <if test="rid!=null">
+                AND recorder_id=#{rid}
+            </if>
+            <if test="startDate!=null and endDate!=null">
+                AND date BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="verify!=null">
+                AND verify=#{verify}
+            </if>
+        </where>
+        <if test="idDESC!=null">
+            ORDER BY id DESC
+        </if>
+
+        <if test="idASC">
+            ORDER BY id
+        </if>
+        <if test="dateDESC!=null">
+            ORDER BY date DESC
+        </if>
+        <if test="dateASC!=null">
+            ORDER BY date
+        </if>
+        <if test="ridDESC!=null">
+            ORDER BY recorder_id DESC
+        </if>
+        <if test="ridASC!=null">
+            ORDER BY recorder_id
+        </if>
+        <if test="offset!=null and count!=null">
+            LIMIT #{offset},#{count}
+        </if>
+    </select>
+
+    <select id="count" resultType="integer" parameterType="map">
+        SELECT COUNT(id) FROM proof
+        <where>
+            <if test="rid!=null">
+                AND recorder_id=#{rid}
+            </if>
+            <if test="startDate!=null and endDate!=null">
+                AND date BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="verify!=null">
+                AND verify=#{verify}
+            </if>
+        </where>
+    </select>
+
+    <update id="update" parameterType="proof">
+        UPDATE proof
+        <set>
+            <if test="verify!=null">
+                verify=#{verify},
+            </if>
+            <if test="verifyUserId!=null">
+                verify_user_id=#{verifyUserId},
+            </if>
+            <if test="verifyTime!=null">
+                verify_time=#{verifyTime},
+            </if>
+            <if test="trash!=null">
+                trash=#{trash}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <resultMap id="proofResultMap" type="proof">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="invoice_count" property="invoiceCount"/>
+        <result column="manager" property="manager"/>
+        <result column="collection" property="collection"/>
+        <result column="recorder_id" property="recorderId"/>
+        <result column="cashier" property="cashier"/>
+        <result column="payer" property="payer"/>
+        <result column="verify" property="verify"/>
+        <result column="verify_user_id" property="verifyUserId"/>
+        <result column="verify_time" property="verifyTime"/>
+        <result column="trash" property="trash"/>
+    </resultMap>
+
 </mapper>
