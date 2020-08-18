@@ -8,5 +8,5 @@ import xyz.huanju.accounting.domain.User;
  * @date 2020/8/9 12:15
  */
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper extends BaseMapper<Integer, User> {
 }

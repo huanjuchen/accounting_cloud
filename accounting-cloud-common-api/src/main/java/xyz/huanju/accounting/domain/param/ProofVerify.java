@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author HuanJu
@@ -15,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Data
 @Accessors(chain = true)
-public class ProofVerify {
+public class ProofVerify implements Serializable {
 
     @NotNull(message = "凭证号不允许为空")
     private Integer id;

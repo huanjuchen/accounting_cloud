@@ -6,7 +6,7 @@ import xyz.huanju.accounting.domain.Subject;
  * @author HuanJu
  * @date 2020/8/10 0:29
  */
-public interface SubjectMapper extends BaseMapper<Subject> {
+public interface SubjectMapper extends BaseMapper<Integer, Subject> {
 
     /**
      * 根据科目代码查找科目

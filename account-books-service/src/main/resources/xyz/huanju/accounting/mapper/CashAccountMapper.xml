@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.huanju.accounting.mapper.CashAccountMapper">
+
+    <insert id="save" parameterType="xyz.huanju.accounting.domain.CashAccount">
+        INSERT INTO cash_account(date, proof_id, abstraction, subject_id, debit_money, credit_money)
+        VALUES (#{date}, #{proofId}, #{abstraction}, #{subjectId}, #{debitMoney}, #{creditMoney})
+    </insert>
+
+    <select id="list" parameterType="map" resultMap="cashAccountMap">
+        SELECT ca.id           AS id,
+               ca.date         AS date,
+               ca.proof_id     AS proof_id,
+               ca.abstraction  AS abstraction,
+               ca.subject_id   AS subject_id,
+               ca.debit_money  AS debit_money,
+               ca.credit_money AS credit_money
+        FROM cash_account ca
+                 RIGHT JOIN
+             (
+                 SELECT id
+                 FROM cash_account
+                 WHERE date &gt;= #{startDate}
+                   AND date &lt;= #{endDate}
+                 ORDER BY date
+             ) id_temp ON id_temp.id = ca.id
+    </select>
+
+    <select id="getOpeningBalance" resultMap="openingBalanceMap">
+        SELECT SUM(credit_money) AS credit_balance, SUM(debit_money) AS debit_balance
+        FROM cash_account
+        WHERE date &lt; DATE_FORMAT(#{date}, '%Y-%m-%d')
+    </select>
+
+    <select id="count" parameterType="map" resultType="integer">
+        SELECT COUNT(id)
+        FROM cash_account
+        WHERE date &gt;= #{startDate}
+          AND date &lt;= #{endDate}
+    </select>
+
+    <resultMap id="cashAccountMap" type="xyz.huanju.accounting.domain.CashAccount">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="proof_id" property="proofId"/>
+        <result column="abstraction" property="abstraction"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="debit_money" property="debitMoney"/>
+        <result column="credit_money" property="creditMoney"/>
+    </resultMap>
+
+    <resultMap id="openingBalanceMap" type="xyz.huanju.accounting.domain.OpeningBalance">
+        <result property="creditBalance" column="credit_balance"/>
+        <result property="debitBalance" column="debit_balance"/>
+    </resultMap>
+
+</mapper>

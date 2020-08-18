@@ -16,10 +16,10 @@ spring:
       transport:
         port: 8719
         dashboard: localhost:8080
-
   redis:
     host: 192.168.224.138
     port: 6379
+    database: 3
 
 #mybatis配置
 mybatis:
@@ -47,3 +47,10 @@ management:
 info:
   name: ${spring.application.name}
   port: ${server.port}
+
+logging:
+  level:
+    xyz:
+      huanju:
+        accounting:
+          mapper: trace

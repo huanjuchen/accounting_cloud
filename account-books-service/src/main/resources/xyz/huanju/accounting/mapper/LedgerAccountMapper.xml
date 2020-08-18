@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.huanju.accounting.mapper.LedgerAccountMapper">
+
+    <insert id="save" parameterType="xyz.huanju.accounting.domain.LedgerAccount">
+        INSERT INTO ledger_account(date, subject_id, abstraction, debit_money, credit_money)
+        VALUES (#{date}, #{subjectId}, #{abstraction}, #{debitMoney}, #{creditMoney})
+    </insert>
+
+    <update id="update" parameterType="xyz.huanju.accounting.domain.LedgerAccount">
+        UPDATE ledger_account
+        <set>
+            <if test="date!=null">
+                date=#{date},
+            </if>
+            <if test="subjectId!=null">
+                subject_id=#{subjectId},
+            </if>
+            <if test="abstraction!=null and abstraction!=''">
+                abstraction=#{abstraction},
+            </if>
+            <if test="debitMoney!=null">
+                debit_money=#{debitMoney},
+            </if>
+            <if test="creditMoney!=null">
+                credit_money=#{creditMoney}
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <select id="count" parameterType="map" resultType="integer">
+        SELECT COUNT(id)
+        FROM ledger_account
+        WHERE subject_id = #{subjectId}
+          AND date &gt;= #{startDate}
+          AND date &lt;= #{endDate}
+    </select>
+
+    <select id="list" parameterType="map" resultMap="ledgerAccountMap">
+        SELECT la.id           AS id,
+               la.date         AS date,
+               la.subject_id   AS subject_id,
+               la.abstraction  AS abstraction,
+               la.debit_money  AS debit_money,
+               la.credit_money AS credit_money
+        FROM ledger_account la
+                 RIGHT JOIN
+             (
+                 SELECT id
+                 FROM ledger_account
+                 WHERE subject_id = #{subjectId}
+                   AND date &gt;= #{startDate}
+                   AND date &lt;= #{endDate}
+                 ORDER BY date
+             ) id_temp ON la.id = id_temp.id
+    </select>
+
+    <select id="findBySubjectAndDate" resultMap="ledgerAccountMap">
+        SELECT id, date, subject_id, abstraction, debit_money, credit_money
+        FROM ledger_account
+        WHERE subject_id = #{subjectId}
+          AND date = #{date}
+    </select>
+
+    <select id="getOpeningBalance" resultMap="openingBalanceMap">
+        SELECT SUM(credit_money) AS credit_balance, SUM(debit_money) AS debit_balance
+        FROM ledger_account
+        WHERE subject_id = #{subjectId}
+          AND date &lt; #{date}
+    </select>
+
+    <resultMap id="ledgerAccountMap" type="xyz.huanju.accounting.domain.LedgerAccount">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="abstraction" property="abstraction"/>
+        <result column="debit_money" property="debitMoney"/>
+        <result column="credit_money" property="creditMoney"/>
+    </resultMap>
+
+    <resultMap id="openingBalanceMap" type="xyz.huanju.accounting.domain.OpeningBalance">
+        <result property="creditBalance" column="credit_balance"/>
+        <result property="debitBalance" column="debit_balance"/>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,75 @@
+server:
+  port: 8400
+
+spring:
+  application:
+    name: account-books-service
+  #数据源信息
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/accounting?useTimezone=true&serverTimezone=Asia/Shanghai&&useSSL=false
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        #nacos地址
+        server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+    alibaba:
+      seata:
+        tx-service-group: accounting-group
+  #rabbitMQ 配置
+  rabbitmq:
+    host: 192.168.224.138
+    port: 5672
+    username: huanju
+    password: 123456
+    virtual-host: /accounting
+    #    publisher-confirm-type: correlated
+    publisher-returns: true
+
+mq:
+  config:
+    proof:
+      exchange-name: testExchange
+      queue-name: testQueue
+
+  #mybatis配置
+mybatis:
+  type-aliases-package: xyz.huanju.accounting.domain,xyz.huanju.accounting.domain.vo
+
+#监控配置
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    info:
+      enabled: true
+    caches:
+      enabled: true
+    env:
+      post:
+        enabled: true
+    beans:
+      enabled: true
+    metrics:
+      enabled: true
+
+# Feign 调用的服务名
+remote:
+  service:
+    subject: subject-service
+    user: user-center
+    proof: proof-service
+
+
+
+#配置监控info信息
+info:
+  name: ${spring.application.name}
+  port: ${server.port}

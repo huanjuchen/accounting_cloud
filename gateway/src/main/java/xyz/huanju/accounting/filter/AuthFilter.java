@@ -3,6 +3,7 @@ package xyz.huanju.accounting.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -23,6 +24,7 @@ import xyz.huanju.accounting.service.TokenService;
 import xyz.huanju.accounting.utils.JsonUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,11 +37,21 @@ import java.util.List;
 @Slf4j
 public class AuthFilter implements GlobalFilter, Ordered {
 
-    private final String LOGIN_PATH = "/login";
+    /**
+     * 排除的路径
+     */
+    private List<String> excludedPaths=new ArrayList<>();
 
-    private final String MANAGE_PATH_PREFIX = "/manage";
+    /**
+     * 超级管理路径
+     */
+    private List<String> adminPaths=new ArrayList<>();
 
-    private final String ADMIN_PATH_PREFIX = "/admin";
+    /**
+     * 管理路径
+     */
+    private List<String> managePaths=new ArrayList<>();
+
 
     private TokenService tokenService;
 
@@ -48,15 +60,33 @@ public class AuthFilter implements GlobalFilter, Ordered {
         this.tokenService = tokenService;
     }
 
+    @Value("#{'${auth.filter.exclude}'.split(',')}")
+    public void setExcludedPaths(List<String> excludedPaths) {
+        this.excludedPaths = excludedPaths;
+    }
+
+    @Value("#{'${auth.filter.admin}'.split(',')}")
+    public void setAdminPaths(List<String> adminPaths) {
+        this.adminPaths = adminPaths;
+    }
+
+    @Value("#{'${auth.filter.manage}'.split(',')}")
+    public void setManagePaths(List<String> managePaths) {
+        this.managePaths = managePaths;
+    }
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         //获取 path
         String path = request.getPath().pathWithinApplication().value();
+        if (path.length() == 0) {
+            return chain.filter(exchange);
+        }
         /*
-        排除用户登录
+        路径排除
          */
-        if (path.contains(LOGIN_PATH) && path.indexOf(LOGIN_PATH) == 0) {
+        if (havePrefixOfList(path,excludedPaths)) {
             return chain.filter(exchange);
         }
 
@@ -82,9 +112,9 @@ public class AuthFilter implements GlobalFilter, Ordered {
         /*
         管理员权限验证
          */
-        if (path.contains(MANAGE_PATH_PREFIX) && path.indexOf(MANAGE_PATH_PREFIX) == 0) {
+        if (havePrefixOfList(path,managePaths)) {
             Integer role = token.getRole();
-            if (UserRole.MANAGER.equals(role)||UserRole.ADMIN.equals(role)) {
+            if (UserRole.MANAGER.equals(role) || UserRole.ADMIN.equals(role)) {
                 return chain.filter(exchange);
             } else {
                 return getMono(response, ResultCode.FORBIDDEN, "权限不足");
@@ -93,7 +123,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
         /*
         超级管理员权限处理
          */
-        if (path.contains(ADMIN_PATH_PREFIX) && path.indexOf(ADMIN_PATH_PREFIX) == 0) {
+        if (havePrefixOfList(path,adminPaths)) {
             Integer role = token.getRole();
             if (UserRole.ADMIN.equals(role)) {
                 return chain.filter(exchange);
@@ -103,6 +133,26 @@ public class AuthFilter implements GlobalFilter, Ordered {
         }
         return chain.filter(exchange);
     }
+
+
+    /**
+     * 检查path 是否有 list中的前缀
+     *
+     * @param path path
+     * @param prefixList list
+     * @return boolean
+     */
+    private boolean havePrefixOfList(String path,List<String> prefixList) {
+        for (String prefix : prefixList) {
+            if (path.contains(prefix) && path.indexOf(prefix) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 
 
     private Mono<Void> getMono(ServerHttpResponse response, Integer code, String message) {

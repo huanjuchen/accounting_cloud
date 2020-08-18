@@ -1,5 +1,11 @@
 package xyz.huanju.accounting.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import xyz.huanju.accounting.dao.SubjectDAO;
 import xyz.huanju.accounting.domain.Subject;
@@ -14,10 +20,20 @@ import java.util.Map;
  * @date 2020/8/10 1:58
  */
 @Component("subjectDAO")
+@CacheConfig(cacheNames = "subjectCache",cacheManager = "cacheManager")
 public class SubjectDAOImpl implements SubjectDAO {
 
-    @Resource
     private SubjectMapper subjectMapper;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+
+    @Resource
+    public void setSubjectMapper(SubjectMapper subjectMapper) {
+        this.subjectMapper = subjectMapper;
+    }
+
 
     @Override
     public Subject findByCode(String code) {
@@ -30,17 +46,21 @@ public class SubjectDAOImpl implements SubjectDAO {
     }
 
     @Override
+    @CacheEvict(key = "#obj.id")
     public int update(Subject obj) {
         return subjectMapper.update(obj);
     }
 
     @Override
-    public int delete(Object key) {
+    @CacheEvict(key = "#key")
+    public int delete(Integer key) {
         return subjectMapper.delete(key);
     }
 
+
     @Override
-    public Subject find(Object key) {
+    @Cacheable(key = "#key",condition = "#key>0", unless = "#result==null")
+    public Subject find(Integer key) {
         return subjectMapper.find(key);
     }
 

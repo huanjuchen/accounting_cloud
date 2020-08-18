@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 /**
  * @author HuanJu
  * @date 2020/8/9 16:04
@@ -13,7 +15,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Data
 @Accessors(chain = true)
-public class Token {
+public class Token implements Serializable {
 
     private String tokenId;
 

@@ -30,12 +30,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int delete(Object key) {
+    public int delete(Integer key) {
         return userMapper.delete(key);
     }
 
     @Override
-    public User find(Object key) {
+    public User find(Integer key) {
         return userMapper.find(key);
     }
 

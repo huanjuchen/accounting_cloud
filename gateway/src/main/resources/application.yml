@@ -21,11 +21,11 @@ spring:
       loadbalancer:
         use404: true
       routes:
-          #subject 服务
+        #subject 服务
         - id: subject-service
           uri: lb://subject-service
           predicates:
-            - Path=/subject/**,/admin/subject/**,/subject-service/actuator/**,/manage/subject/**
+            - Path=/subject/**,/admin/subject/**,/test/subject/**,/subject-service/actuator/**,/manage/subject/**
           filters:
             - RewritePath=/subject-service/actuator/(?<segment>), /actuator/$\{segment}
 
@@ -41,14 +41,29 @@ spring:
         - id: proof-service
           uri: lb://proof-service
           predicates:
-            - Path=/proof/**,/admin/proof/**,/manage/user/**
+            - Path=/proof/**,/admin/proof/**,/manage/user/**,/test/proof/**,/proof-service/actuator/**
+          filters:
+            - RewritePath=/proof-service/actuator/(?<segment>), /actuator/$\{segment}
 
+        - id: account-books-service
+          uri: lb://account-books-service
+          predicates:
+            - Path=/accountBook/**,/account-books-service/actuator/**
+          filters:
+            - RewritePath=/account-books-service/actuator/(?<segment>), /actuator/$\{segment}
 
 token:
   redis:
     host: ${spring.redis.host}
     port: ${spring.redis.port}
     db: ${spring.redis.database}
+
+auth:
+  filter:
+    exclude: /login,/test
+    admin: /admin
+    manage: /manage
+
 
 
 

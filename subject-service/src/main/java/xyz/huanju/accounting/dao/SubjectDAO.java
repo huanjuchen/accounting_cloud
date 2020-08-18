@@ -6,7 +6,7 @@ import xyz.huanju.accounting.domain.Subject;
  * @author HuanJu
  * @date 2020/8/10 1:02
  */
-public interface SubjectDAO extends BaseDAO<Subject> {
+public interface SubjectDAO extends BaseDAO<Integer, Subject> {
 
     /**
      * 根据科目代码查找科目

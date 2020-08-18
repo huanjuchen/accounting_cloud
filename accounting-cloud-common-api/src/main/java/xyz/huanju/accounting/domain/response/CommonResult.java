@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 /**
  * @author HuanJu
  * @date 2020/8/8 20:31
@@ -13,7 +15,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class CommonResult<T> {
+public class CommonResult<T> implements Serializable {
 
     /**
      *

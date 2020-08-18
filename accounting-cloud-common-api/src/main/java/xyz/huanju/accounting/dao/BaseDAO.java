@@ -7,14 +7,14 @@ import java.util.Map;
  * @author HuanJu
  * @date 2020/8/9 16:43
  */
-public interface BaseDAO<T> {
+public interface BaseDAO<K, V> {
     /**
      * 存储实体
      *
      * @param obj 实体
      * @return 受影响的行数
      */
-    int save(T obj);
+    int save(V obj);
 
     /**
      * 更新实体
@@ -22,7 +22,7 @@ public interface BaseDAO<T> {
      * @param obj 实体
      * @return 受影响的行数
      */
-    int update(T obj);
+    int update(V obj);
 
     /**
      * 删除实体
@@ -30,7 +30,7 @@ public interface BaseDAO<T> {
      * @param key key
      * @return 受影响的行数
      */
-    int delete(Object key);
+    int delete(K key);
 
     /**
      * 根据key查找实体
@@ -38,7 +38,7 @@ public interface BaseDAO<T> {
      * @param key key
      * @return 实体
      */
-    T find(Object key);
+    V find(K key);
 
     /**
      * 根据name查找实体
@@ -46,7 +46,7 @@ public interface BaseDAO<T> {
      * @param name name
      * @return 实体
      */
-    T findByName(String name);
+    V findByName(String name);
 
 
     /**
@@ -55,7 +55,7 @@ public interface BaseDAO<T> {
      * @param map 条件
      * @return 实体list
      */
-    List<T> list(Map<String, Object> map);
+    List<V> list(Map<String, Object> map);
 
 
     /**

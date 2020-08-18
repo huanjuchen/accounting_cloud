@@ -28,8 +28,8 @@ public class RedisTokenServiceImpl implements TokenService {
     @Override
     public String saveToken(Token token) {
         log.info("Save in redis, user id: " + token.getUserId());
-        token.setTime(System.currentTimeMillis() + TWO_HOURS);
         String key = UUID.randomUUID().toString().replace("-", "");
+        token.setTime(System.currentTimeMillis() + TWO_HOURS).setTokenId(key);
         template.opsForValue().set(key, token, 2, TimeUnit.HOURS);
         log.info("Save success, user id: " + token.getUserId());
         return key;
