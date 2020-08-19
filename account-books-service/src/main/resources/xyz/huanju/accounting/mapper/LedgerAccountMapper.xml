@@ -3,16 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.huanju.accounting.mapper.LedgerAccountMapper">
 
-    <insert id="save" parameterType="xyz.huanju.accounting.domain.LedgerAccount">
+    <insert id="save" parameterType="xyz.huanju.accounting.domain.LedgerAccount" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ledger_account(date, subject_id, abstraction, debit_money, credit_money)
-        VALUES (#{date}, #{subjectId}, #{abstraction}, #{debitMoney}, #{creditMoney})
+        VALUES (#{date,jdbcType=DATE}, #{subjectId}, #{abstraction}, #{debitMoney}, #{creditMoney})
     </insert>
 
     <update id="update" parameterType="xyz.huanju.accounting.domain.LedgerAccount">
         UPDATE ledger_account
         <set>
             <if test="date!=null">
-                date=#{date},
+                date=STR_TO_DATE(#{date},'%Y-%m-%d'),
             </if>
             <if test="subjectId!=null">
                 subject_id=#{subjectId},
@@ -34,8 +34,8 @@
         SELECT COUNT(id)
         FROM ledger_account
         WHERE subject_id = #{subjectId}
-          AND date &gt;= #{startDate}
-          AND date &lt;= #{endDate}
+          AND date &gt;= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+          AND date &lt;= STR_TO_DATE(#{endDate}, '%Y-%m-%d')
     </select>
 
     <select id="list" parameterType="map" resultMap="ledgerAccountMap">
@@ -51,8 +51,8 @@
                  SELECT id
                  FROM ledger_account
                  WHERE subject_id = #{subjectId}
-                   AND date &gt;= #{startDate}
-                   AND date &lt;= #{endDate}
+                   AND date &gt;= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+                   AND date &lt;= STR_TO_DATE(#{endDate}, '%Y-%m-%d')
                  ORDER BY date
              ) id_temp ON la.id = id_temp.id
     </select>
@@ -61,14 +61,14 @@
         SELECT id, date, subject_id, abstraction, debit_money, credit_money
         FROM ledger_account
         WHERE subject_id = #{subjectId}
-          AND date = #{date}
+          AND date = #{date,jdbcType=DATE}
     </select>
 
     <select id="getOpeningBalance" resultMap="openingBalanceMap">
         SELECT SUM(credit_money) AS credit_balance, SUM(debit_money) AS debit_balance
         FROM ledger_account
         WHERE subject_id = #{subjectId}
-          AND date &lt; #{date}
+          AND date &lt; STR_TO_DATE(#{date}, '%Y-%m-%d')
     </select>
 
     <resultMap id="ledgerAccountMap" type="xyz.huanju.accounting.domain.LedgerAccount">

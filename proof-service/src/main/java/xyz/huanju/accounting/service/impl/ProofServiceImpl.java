@@ -30,7 +30,6 @@ import java.util.*;
  */
 @Service
 @Slf4j
-@Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.SUPPORTS, readOnly = true)
 public class ProofServiceImpl implements ProofService {
 
     @Resource
@@ -149,6 +148,16 @@ public class ProofServiceImpl implements ProofService {
             proofItem.setDebitSubSubject(dss);
         }
         proof.setItems(proofItems);
+        Integer verifyUserId = proof.getVerifyUserId();
+        if (verifyUserId != null) {
+            User verifyUser = userService.getUser(verifyUserId);
+            proof.setVerifyUser(verifyUser);
+        }
+        Integer rid = proof.getRecorderId();
+        if (rid != null) {
+            User ru = userService.getUser(rid);
+            proof.setRecorder(ru);
+        }
     }
 
     @Override
@@ -198,7 +207,9 @@ public class ProofServiceImpl implements ProofService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void trashProof(Integer proofId, String tokenId) {
         User user = userService.getUserByToken(tokenId);
-        Proof proof=proofDAO.find(proofId);
+        Proof proof = proofDAO.find(proofId);
+        List<ProofItem> proofItems = proofItemDAO.items(proofId);
+        proof.setItems(proofItems);
         if (proof.getTrash() != 0) {
             throw new BadUpdateException(400, "不能重复冲账");
         }
@@ -246,15 +257,17 @@ public class ProofServiceImpl implements ProofService {
                 throw new BadCreateException(500, "服务器错误");
             }
         }
-        log.info("{}号凭证进行了冲账，处理人：{}",proofId,user.getId());
+        log.info("{}号凭证进行了冲账，处理人：{}", proofId, user.getId());
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class,propagation = Propagation.REQUIRED)
     public void update(Proof proof) {
         proofDAO.update(proof);
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class,propagation = Propagation.REQUIRED)
     public void updateItem(ProofItem proofItem) {
         proofItemDAO.update(proofItem);
     }

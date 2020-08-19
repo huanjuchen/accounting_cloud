@@ -3,16 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.huanju.accounting.mapper.BankAccountMapper">
 
-    <insert id="save" parameterType="xyz.huanju.accounting.domain.BankAccount">
+    <insert id="save" parameterType="xyz.huanju.accounting.domain.BankAccount" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO bank_account(date, proof_id, abstraction, subject_id, debit_money, credit_money)
-        VALUES (#{date}, #{proofId}, #{abstraction}, #{subjectId}, #{debitMoney}, #{creditMoney})
+        VALUES (#{date,jdbcType=DATE}, #{proofId}, #{abstraction}, #{subjectId}, #{debitMoney}, #{creditMoney})
     </insert>
 
     <select id="count" parameterType="map" resultType="Integer">
         SELECT COUNT(id)
         FROM bank_account
-        WHERE date &gt;= #{startDate}
-          AND date &lt;= #{endDate}
+        WHERE date &gt;= STR_TO_DATE(#{startDate},'%Y-%m-%d')
+          AND date &lt;= STR_TO_DATE(#{endDate},'%Y-%m-%d')
     </select>
 
     <select id="getOpeningBalance" resultMap="openingBalanceMap">

@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import xyz.huanju.accounting.converter.ProofConverter;
 import xyz.huanju.accounting.domain.Proof;
 import xyz.huanju.accounting.domain.ProofItem;
+import xyz.huanju.accounting.domain.param.ProofVerify;
 import xyz.huanju.accounting.domain.response.CommonResult;
 import xyz.huanju.accounting.domain.vo.ProofVO;
 import xyz.huanju.accounting.service.ProofService;
+import xyz.huanju.accounting.utils.DateUtils;
+import xyz.huanju.accounting.utils.JsonUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -59,31 +62,21 @@ public class ProofController {
      */
     @GetMapping("/proof")
     public CommonResult<List<ProofVO>> list(Integer rid, String startDate, String endDate, Integer verify, String orderType, Integer page, Integer pageSize) {
+        log.debug("---> [list] rid: {}, startDate: {}, endDate: {}, verify: {}, orderType: {}, page: {}, pageSize: {}", rid, startDate, endDate, verify, orderType, page, pageSize);
         Map<String, Object> map = new HashMap<>();
         //包装查询条件
         if (rid != null) {
             map.put("rid", rid);
         }
         if (startDate != null) {
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                map.put("startDate", format.parse(startDate));
-            } catch (ParseException e) {
-                log.info("日期转换失败,已忽略");
-                log.debug("调试日志" + e.getMessage());
-            }
+            map.put("startDate", startDate);
             if (endDate != null) {
-                try {
-                    map.put("endDate", format.parse(endDate));
-                } catch (ParseException e) {
-                    log.info("日期转换失败,已忽略");
-                    log.debug("调试日志" + e.getMessage());
-                }
-
+                map.put("endDate", endDate);
             } else {
-                map.put("endDate", new Date());
+                map.put("endDate", DateUtils.getToday());
             }
         }
+
         if (verify != null) {
             if (verify == 0 || verify == 1 || verify == -1) {
                 map.put("verify", verify);
@@ -92,27 +85,26 @@ public class ProofController {
         if (orderType != null) {
             switch (orderType) {
                 case ID_ASC:
-                    map.put(ID_ASC, object);
+                    map.put(ID_ASC, 1);
                     break;
                 case ID_DESC:
-                    map.put(ID_DESC, object);
+                    map.put(ID_DESC, 1);
                     break;
                 case DATE_ASC:
-                    map.put(DATE_ASC, object);
+                    map.put(DATE_ASC, 1);
                     break;
                 case DATE_DESC:
-                    map.put(DATE_DESC, object);
+                    map.put(DATE_DESC, 1);
                     break;
                 case RID_ASC:
-                    map.put(RID_ASC, object);
+                    map.put(RID_ASC, 1);
                     break;
                 case RID_DESC:
-                    map.put(RID_DESC, object);
+                    map.put(RID_DESC, 1);
                     break;
                 default:
                     break;
             }
-
         }
         if (page != null && pageSize != null) {
             map.put("offset", page > 0 ? ((page - 1) * pageSize) : 0);
@@ -121,37 +113,29 @@ public class ProofController {
             map.put("offset", 0);
             map.put("count", 10);
         }
-
+        log.debug("[list] Call Service Params：{}", JsonUtils.toJson(map));
         //调用Service层获取数据
         List<Proof> proofs = proofService.list(map);
-        return CommonResult.ok(ProofConverter.INSTANCE.convertToVoList(proofs));
+        log.debug("[list]Call Service result：{}", JsonUtils.toJson(proofs));
+        CommonResult<List<ProofVO>> commonResult = CommonResult.ok(ProofConverter.INSTANCE.convertToVoList(proofs));
+        log.debug("<--- [list] {}", JsonUtils.toJson(commonResult));
+        return commonResult;
     }
 
     @GetMapping("/proof/count")
     public CommonResult<Integer> count(Integer rid, String startDate, String endDate, Integer verify) {
+        log.debug("---> [count] rid: {}, startDate: {}, endDate: {}, verify: {}", rid, startDate, endDate, verify);
         Map<String, Object> map = new HashMap<>();
         //包装查询条件
         if (rid != null) {
             map.put("rid", rid);
         }
         if (startDate != null) {
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                map.put("startDate", format.parse(startDate));
-            } catch (ParseException e) {
-                log.info("日期转换失败,已忽略");
-                log.debug("调试日志" + e.getMessage());
-            }
+            map.put("startDate", startDate);
             if (endDate != null) {
-                try {
-                    map.put("endDate", format.parse(endDate));
-                } catch (ParseException e) {
-                    log.info("日期转换失败,已忽略");
-                    log.debug("调试日志" + e.getMessage());
-                }
-
+                map.put("endDate", endDate);
             } else {
-                map.put("endDate", new Date());
+                map.put("endDate", DateUtils.getToday());
             }
         }
         if (verify != null) {
@@ -159,13 +143,15 @@ public class ProofController {
                 map.put("verify", verify);
             }
         }
-
+        log.debug("[count] Call Service Params：{}", JsonUtils.toJson(map));
         Integer count = proofService.count(map);
-        if (count != null) {
-            return CommonResult.ok(count);
-        } else {
-            return CommonResult.ok(0);
+        log.debug("[count] Call Service result：{}", JsonUtils.toJson(count));
+        if (count == null) {
+            count = 0;
         }
+        CommonResult<Integer> commonResult = CommonResult.ok(count);
+        log.debug("<--- [count] {}", JsonUtils.toJson(commonResult));
+        return commonResult;
     }
 
     @GetMapping("/proof/{id}")
@@ -175,13 +161,34 @@ public class ProofController {
     }
 
     @PutMapping("/proof")
-    public CommonResult<ProofVO> update(@RequestBody Proof proof){
+    public CommonResult<ProofVO> update(@RequestBody Proof proof) {
         proofService.update(proof);
         return CommonResult.ok();
     }
 
     @PutMapping("/proof/item")
-    public CommonResult<ProofVO> updateItem(@RequestBody ProofItem proofItem){
+    public CommonResult<ProofVO> updateItem(@RequestBody ProofItem proofItem) {
+        proofService.updateItem(proofItem);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 冲账
+     */
+    @PutMapping("/proof/trash/{id}")
+    public CommonResult<ProofVO> trashProof(@PathVariable Integer id,HttpServletRequest request) {
+        String tokenId=request.getHeader("token_id");
+        proofService.trashProof(id,tokenId);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 审核
+     */
+    @PutMapping("/manage/proof/verify")
+    public CommonResult<ProofVO> verify(@RequestBody @Validated ProofVerify proofVerify, HttpServletRequest request) {
+        String tokenId = request.getHeader("token_id");
+        proofService.verify(proofVerify.getId(), proofVerify.getResult(), tokenId);
         return CommonResult.ok();
     }
 

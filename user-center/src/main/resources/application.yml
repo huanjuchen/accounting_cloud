@@ -66,7 +66,11 @@ management:
 info:
   name: ${spring.application.name}
   port: ${server.port}
-
+logging:
+  level:
+    xyz:
+      huanju:
+        accounting: debug
 
 
 

@@ -1,10 +1,7 @@
 package xyz.huanju.accounting.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import xyz.huanju.accounting.domain.Proof;
 import xyz.huanju.accounting.domain.ProofItem;
 import xyz.huanju.accounting.domain.response.CommonResult;
@@ -22,8 +19,8 @@ public interface ProofFeignClient {
      * @param id id
      * @return common result
      */
-    @GetMapping("/proof/{id}")
-    CommonResult<ProofVO> find(@PathVariable Integer id);
+    @RequestMapping(value = "/proof/{id}",method = RequestMethod.GET)
+    CommonResult<ProofVO> find(@PathVariable("id") Integer id);
 
 
     /**
@@ -31,7 +28,7 @@ public interface ProofFeignClient {
      * @param proof proof
      * @return common result
      */
-    @PutMapping("/proof")
+    @RequestMapping(value = "/proof",method = RequestMethod.PUT)
     CommonResult<ProofVO> update(@RequestBody Proof proof);
 
 
@@ -41,7 +38,7 @@ public interface ProofFeignClient {
      * @param proofItem proof item
      * @return common result
      */
-    @PutMapping("/proof/item")
+    @RequestMapping(value = "/proof/item",method = RequestMethod.PUT)
     CommonResult<ProofVO> updateItem(@RequestBody ProofItem proofItem);
 
 }

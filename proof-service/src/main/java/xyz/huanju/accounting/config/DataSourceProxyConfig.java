@@ -7,9 +7,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 
 import javax.sql.DataSource;
@@ -19,7 +22,7 @@ import java.util.List;
  * @author HuanJu
  * @date 2020/8/17 23:13
  */
-@Configuration
+//@Configuration
 @Slf4j
 public class DataSourceProxyConfig {
 
@@ -40,6 +43,13 @@ public class DataSourceProxyConfig {
     public DataSourceProxy dataSourceProxy(DataSource dataSource) {
         return new DataSourceProxy(dataSource);
     }
+
+    @ConditionalOnMissingBean(PlatformTransactionManager.class)
+    @Bean
+    public PlatformTransactionManager txManager(DataSourceProxy dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
 
     @Bean
     public SqlSessionFactory sqlSessionFactory(DataSourceProxy dataSourceProxy) {

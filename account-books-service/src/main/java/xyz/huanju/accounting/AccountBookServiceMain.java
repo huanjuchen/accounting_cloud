@@ -11,7 +11,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @author HuanJu
  * @date 2020/8/15 1:03
  */
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+//@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableRabbit

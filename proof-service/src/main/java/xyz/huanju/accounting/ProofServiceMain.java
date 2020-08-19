@@ -13,7 +13,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @date 2020/8/10 23:57
  */
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+//@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableRabbit

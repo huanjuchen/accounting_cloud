@@ -8,8 +8,8 @@
         INSERT INTO proof(id, date,
                           invoice_count, manager, collection,
                           recorder_id, cashier, payer, verify, verify_user_id, verify_time, trash)
-        VALUES (NULL, #{date}, #{invoiceCount}, #{manager},
-                #{collection}, #{recorderId}, #{cashier}, #{payer}, #{verify}, #{verifyUserId}, #{verifyTime}, #{trash})
+        VALUES (NULL, #{date,jdbcType=DATE}, #{invoiceCount}, #{manager},
+                #{collection}, #{recorderId}, #{cashier}, #{payer}, #{verify}, #{verifyUserId}, #{verifyTime,jdbcType=TIMESTAMP}, #{trash})
     </insert>
 
     <select id="find" resultMap="proofResultMap" parameterType="integer">
@@ -29,19 +29,20 @@
         WHERE id = #{id}
     </select>
 
-    <select id="list" resultMap="proofResultMap" parameterType="map">
+    <select id="list" resultMap="proofResultMap" parameterType="java.util.Map">
         SELECT id,
         date,
         invoice_count,
         verify,
         trash,
-        FROM proof p
+        recorder_id
+        FROM proof
         <where>
             <if test="rid!=null">
                 AND recorder_id=#{rid}
             </if>
             <if test="startDate!=null and endDate!=null">
-                AND date BETWEEN #{startDate} AND #{endDate}
+                AND date BETWEEN STR_TO_DATE(#{startDate},'%Y-%m-%d') AND STR_TO_DATE(#{endDate},'%Y-%m-%d')
             </if>
             <if test="verify!=null">
                 AND verify=#{verify}
@@ -50,7 +51,6 @@
         <if test="idDESC!=null">
             ORDER BY id DESC
         </if>
-
         <if test="idASC">
             ORDER BY id
         </if>
@@ -71,14 +71,14 @@
         </if>
     </select>
 
-    <select id="count" resultType="integer" parameterType="map">
+    <select id="count" resultType="integer" parameterType="java.util.Map">
         SELECT COUNT(id) FROM proof
         <where>
             <if test="rid!=null">
                 AND recorder_id=#{rid}
             </if>
             <if test="startDate!=null and endDate!=null">
-                AND date BETWEEN #{startDate} AND #{endDate}
+                AND date BETWEEN STR_TO_DATE(#{startDate},'%Y-%m-%d') AND STR_TO_DATE(#{endDate},'%Y-%m-%d')
             </if>
             <if test="verify!=null">
                 AND verify=#{verify}

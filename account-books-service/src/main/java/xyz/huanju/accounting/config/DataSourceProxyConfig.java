@@ -2,14 +2,18 @@ package xyz.huanju.accounting.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import io.seata.rm.datasource.DataSourceProxy;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -17,7 +21,8 @@ import javax.sql.DataSource;
  * @author HuanJu
  * @date 2020/8/17 23:24
  */
-@Configuration
+//@Configuration
+@Slf4j
 public class DataSourceProxyConfig {
 
 
@@ -38,6 +43,13 @@ public class DataSourceProxyConfig {
     @Bean
     public DataSourceProxy dataSourceProxy(DataSource dataSource){
         return new DataSourceProxy(dataSource);
+    }
+
+    @ConditionalOnMissingBean(PlatformTransactionManager.class)
+    @Bean
+    public PlatformTransactionManager txManager(DataSourceProxy dataSource) {
+        log.info("创建 DataSourceTransactionManager");
+        return new DataSourceTransactionManager(dataSource);
     }
 
     @Bean

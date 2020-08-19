@@ -3,9 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="xyz.huanju.accounting.mapper.CashAccountMapper">
 
-    <insert id="save" parameterType="xyz.huanju.accounting.domain.CashAccount">
+    <insert id="save" parameterType="xyz.huanju.accounting.domain.CashAccount" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO cash_account(date, proof_id, abstraction, subject_id, debit_money, credit_money)
-        VALUES (#{date}, #{proofId}, #{abstraction}, #{subjectId}, #{debitMoney}, #{creditMoney})
+        VALUES (#{date,jdbcType=DATE}, #{proofId}, #{abstraction}, #{subjectId}, #{debitMoney}, #{creditMoney})
     </insert>
 
     <select id="list" parameterType="map" resultMap="cashAccountMap">
@@ -21,8 +21,8 @@
              (
                  SELECT id
                  FROM cash_account
-                 WHERE date &gt;= #{startDate}
-                   AND date &lt;= #{endDate}
+                 WHERE date &gt;= STR_TO_DATE(#{startDate},'%Y-%m-%d')
+                   AND date &lt;= STR_TO_DATE(#{endDate},'%Y-%m-%d')
                  ORDER BY date
              ) id_temp ON id_temp.id = ca.id
     </select>
@@ -36,8 +36,8 @@
     <select id="count" parameterType="map" resultType="integer">
         SELECT COUNT(id)
         FROM cash_account
-        WHERE date &gt;= #{startDate}
-          AND date &lt;= #{endDate}
+        WHERE date &gt;= STR_TO_DATE(#{startDate},'%Y-%m-%d')
+          AND date &lt;= STR_TO_DATE(#{endDate},'%Y-%m-%d')
     </select>
 
     <resultMap id="cashAccountMap" type="xyz.huanju.accounting.domain.CashAccount">

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.huanju.accounting.dao.BankAccountDAO;
 import xyz.huanju.accounting.dao.CashAccountDAO;
@@ -20,6 +21,7 @@ import xyz.huanju.accounting.service.SubjectService;
 import xyz.huanju.accounting.service.UserService;
 import xyz.huanju.accounting.utils.AccountBookUtils;
 import xyz.huanju.accounting.utils.DateUtils;
+import xyz.huanju.accounting.utils.JsonUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -251,6 +253,7 @@ public class AccountBookServiceImpl implements AccountBookService {
 
     @Override
     @GlobalTransactional
+    @Transactional(rollbackFor = RuntimeException.class,propagation = Propagation.REQUIRED)
     public void accountBookHandle(ProofMsg proofMsg) {
         Proof proof = proofService.getProof(proofMsg.getProofId());
         if (proof == null) {
@@ -267,6 +270,14 @@ public class AccountBookServiceImpl implements AccountBookService {
         for (ProofItem item : items) {
             dls = item.getDebitLedgerSubject();
             cls = item.getCreditLedgerSubject();
+                        /*
+            明细账
+             */
+            subAccountHandle(item, proof.getDate(), proof.getId());
+            /*
+            总账
+             */
+            ledgerAccountHandle(item, proof.getDate());
             /*
             填写日记账
              */
@@ -285,24 +296,19 @@ public class AccountBookServiceImpl implements AccountBookService {
             } else if (cls != null && Objects.equals(cls.getCode(), "1002")) {
                 bankAccountHandle(item, CREDIT, proof.getDate(), proof.getId());
             }
-            /*
-            明细账
-             */
-            subAccountHandle(item, proof.getDate(), proof.getId());
-            /*
-            总账
-             */
-            ledgerAccountHandle(item, proof.getDate());
+
+
             ProofItem itemNew = new ProofItem();
             itemNew.setId(item.getId());
             itemNew.setCharge(true);
             proofService.updateItem(itemNew);
         }
         Proof proofNew=new Proof();
+        proofNew.setId(proof.getId());
         proofNew.setVerify(1);
         proofNew.setVerifyUserId(proofMsg.getVerifiedUserId());
         proofNew.setDate(proofMsg.getDate());
-        proofService.update(proof);
+        proofService.update(proofNew);
     }
 
     /**
@@ -314,13 +320,13 @@ public class AccountBookServiceImpl implements AccountBookService {
             cashAccount.setDate(date)
                     .setProofId(proofId)
                     .setAbstraction(item.getAbstraction())
-                    .setSubjectId(item.getCreditLedgerSubjectId())
+                    .setSubjectId(item.getCreditLedgerSubject().getId())
                     .setDebitMoney(item.getMoney());
         } else {
             cashAccount.setDate(date)
                     .setProofId(proofId)
                     .setAbstraction(item.getAbstraction())
-                    .setSubjectId(item.getDebitLedgerSubjectId())
+                    .setSubjectId(item.getDebitLedgerSubject().getId())
                     .setCreditMoney(item.getMoney());
         }
         int rows = cashAccountDAO.save(cashAccount);
@@ -334,18 +340,19 @@ public class AccountBookServiceImpl implements AccountBookService {
      * 银行日记账处理
      */
     private void bankAccountHandle(ProofItem item, char t, Date date, Integer proofId) {
+        log.info(JsonUtils.toJson(item));
         BankAccount bankAccount = new BankAccount();
         if (t == DEBIT) {
             bankAccount.setDate(date)
                     .setProofId(proofId)
                     .setAbstraction(item.getAbstraction())
-                    .setSubjectId(item.getCreditLedgerSubjectId())
+                    .setSubjectId(item.getCreditLedgerSubject().getId())
                     .setDebitMoney(item.getMoney());
         } else {
             bankAccount.setDate(date)
                     .setProofId(proofId)
                     .setAbstraction(item.getAbstraction())
-                    .setSubjectId(item.getDebitLedgerSubjectId())
+                    .setSubjectId(item.getDebitLedgerSubject().getId())
                     .setCreditMoney(item.getMoney());
         }
         int rows = bankAccountDAO.save(bankAccount);
@@ -369,7 +376,7 @@ public class AccountBookServiceImpl implements AccountBookService {
             subAccount.setDate(date)
                     .setProofId(proofId)
                     .setAbstraction(item.getAbstraction())
-                    .setSubjectId(item.getDebitSubSubjectId())
+                    .setSubjectId(item.getDebitSubSubject().getId())
                     .setDebitMoney(item.getMoney());
             int rows = subAccountDAO.save(subAccount);
             if (rows != 1) {
@@ -381,7 +388,7 @@ public class AccountBookServiceImpl implements AccountBookService {
             subAccount.setDate(date)
                     .setProofId(proofId)
                     .setAbstraction(item.getAbstraction())
-                    .setSubjectId(item.getCreditSubSubjectId())
+                    .setSubjectId(item.getCreditSubSubject().getId())
                     .setCreditMoney(item.getMoney());
             int rows = subAccountDAO.save(subAccount);
             if (rows != 1) {

@@ -15,15 +15,19 @@ public final class DateUtils {
 
     public static Date getDate(String dateStr) {
         try {
-            return new SimpleDateFormat().parse(dateStr);
+            return new SimpleDateFormat(PATTERN).parse(dateStr);
         } catch (ParseException e) {
             return null;
         }
     }
 
+    public static String getToday(){
+        return new SimpleDateFormat(PATTERN).format(new Date());
+    }
+
 
     public static String[] monthStartEnd(Date date) {
-        String dateStr = new SimpleDateFormat().format(date);
+        String dateStr = new SimpleDateFormat(PATTERN).format(date);
         return monthStartEnd(dateStr);
     }
 

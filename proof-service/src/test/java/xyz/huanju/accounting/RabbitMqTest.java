@@ -29,7 +29,7 @@ public class RabbitMqTest {
 
     @Test
     public void sendTest(){
-        ProofMsg proofMsg=new ProofMsg("1",1,1,new Date());
+        ProofMsg proofMsg=new ProofMsg(1,1,new Date());
         proofMqService.sendMsg(proofMsg);
     }
 

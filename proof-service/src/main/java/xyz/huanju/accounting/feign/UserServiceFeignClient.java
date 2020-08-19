@@ -1,13 +1,12 @@
 package xyz.huanju.accounting.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import xyz.huanju.accounting.domain.User;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import xyz.huanju.accounting.domain.response.CommonResult;
 import xyz.huanju.accounting.domain.vo.UserVO;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author HuanJu
@@ -23,7 +22,7 @@ public interface UserServiceFeignClient {
      * @param userId user id
      * @return 包含user 的CommonResult
      */
-    @GetMapping("/user/{userId}")
+    @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET)
     CommonResult<UserVO> getUser(@PathVariable(value = "userId") Integer userId);
 
     /**
@@ -32,6 +31,6 @@ public interface UserServiceFeignClient {
      * @param tokenId token id
      * @return 包含user 的CommonResult
      */
-    @GetMapping("/user/token/{tokenId}")
+    @RequestMapping(value = "/user/token/{tokenId}", method = RequestMethod.GET)
     CommonResult<UserVO> getUserByToken(@PathVariable(value = "tokenId") String tokenId);
 }

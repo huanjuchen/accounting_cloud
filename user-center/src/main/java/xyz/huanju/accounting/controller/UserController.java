@@ -37,7 +37,7 @@ public class UserController {
                                                   @RequestParam(required = false, name = "selectWord") String selectWord,
                                                   @RequestParam(required = false, name = "desc") String desc,
                                                   @RequestParam(required = false, name = "valid") String valid) {
-        log.debug("page=" + page + "  pageSize=" + pageSize + "  selectWord=" + selectWord + "  valid=" + valid);
+        log.debug("---> [getUserList] page: {}, pageSize: {}, selectWord: {}, desc: {}, valid: {}", page, pageSize, selectWord, desc, valid);
         Map<String, Object> map = new HashMap<>();
         Integer pageInt = null;
         Integer pageSizeInt = null;
@@ -127,15 +127,16 @@ public class UserController {
 
     @GetMapping({"/admin/user/{userId}", "/user/{userId}"})
     public CommonResult<UserVO> getUser(@PathVariable(value = "userId") Integer userId) {
+        log.debug("---> [getUser] userId: {}", userId);
         User user = userService.find(userId);
         return CommonResult.ok(userConverter.convertToVo(user));
     }
 
-    @GetMapping({"/admin/user/token/{tokenId}","/admin/user/by-token", "/user/token/{tokenId}","/user/by-token"})
-    public CommonResult<UserVO> getUserByToken(HttpServletRequest request, @PathVariable(value = "tokenId",required = false) String tokenId) {
-        String tid=tokenId;
-        if (tid==null||tid.length()==0){
-            tid=request.getHeader("token_id");
+    @GetMapping({"/admin/user/token/{tokenId}", "/admin/user/by-token", "/user/token/{tokenId}", "/user/by-token"})
+    public CommonResult<UserVO> getUserByToken(HttpServletRequest request, @PathVariable(value = "tokenId", required = false) String tokenId) {
+        String tid = tokenId;
+        if (tid == null || tid.length() == 0) {
+            tid = request.getHeader("token_id");
         }
         User user = userService.getUserByToken(tid);
         return CommonResult.ok(userConverter.convertToVo(user));

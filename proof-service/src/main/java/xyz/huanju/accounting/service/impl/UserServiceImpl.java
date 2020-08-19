@@ -10,6 +10,7 @@ import xyz.huanju.accounting.domain.vo.UserVO;
 import xyz.huanju.accounting.exception.RemoteCallException;
 import xyz.huanju.accounting.feign.UserServiceFeignClient;
 import xyz.huanju.accounting.service.UserService;
+import xyz.huanju.accounting.utils.JsonUtils;
 
 import javax.annotation.Resource;
 
@@ -28,7 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Integer userId) {
-        return userResultHandle(userServiceFeignClient.getUser(userId));
+        CommonResult<UserVO> commonResult = userServiceFeignClient.getUser(userId);
+        log.info(JsonUtils.toJson(commonResult));
+        return userResultHandle(commonResult);
     }
 
     @Override

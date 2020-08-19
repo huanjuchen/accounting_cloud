@@ -41,7 +41,7 @@ spring:
         - id: proof-service
           uri: lb://proof-service
           predicates:
-            - Path=/proof/**,/admin/proof/**,/manage/user/**,/test/proof/**,/proof-service/actuator/**
+            - Path=/proof/**,/admin/proof/**,/manage/proof/**,/test/proof/**,/proof-service/actuator/**
           filters:
             - RewritePath=/proof-service/actuator/(?<segment>), /actuator/$\{segment}
 

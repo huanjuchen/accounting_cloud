@@ -20,6 +20,7 @@ public class JsonUtils {
         try {
             return MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -28,6 +29,7 @@ public class JsonUtils {
         try {
             return MAPPER.readValue(str,clazz);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             return null;
         }
     }
